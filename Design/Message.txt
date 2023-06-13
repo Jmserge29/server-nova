@@ -1,0 +1,29 @@
+{
+  "id": "123456789",
+  "conversation_id": "987654321",
+  "sender_id": "54321",
+  "content": "Hola, ¿cómo estás?",
+  "timestamp": "2022-05-01T12:00:00Z",
+  "attachments": [
+    {
+      "id": "1",
+      "type": "image",
+      "url": "https://example.com/image.jpg"
+    },
+    {
+      "id": "2",
+      "type": "file",
+      "url": "https://example.com/document.pdf"
+    }
+  ],
+  "reactions": [
+    {
+      "emoji": "👍",
+      "users": ["123", "456", "789"]
+    },
+    {
+      "emoji": "❤️",
+      "users": ["321", "654"]
+    }
+  ]
+}

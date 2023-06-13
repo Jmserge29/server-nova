@@ -1,0 +1,17 @@
+{
+   "conversation_id": "12345",
+   "subject": "Proyecto de programación",
+   "status": "active",
+   "type": "group",
+   "participants": [
+       {"user_id": "98765", "name": "John"},
+       {"user_id": "54321", "name": "Alice"}
+   ],
+   "messages": [
+       {"message_id": "1", "sender_id": "98765", "receiver_id": "54321", "timestamp": "2023-04-26 10:23:15", "content": "Hola Alice, ¿cómo estás?", "is_read": true, "attachments": [{"url": "https://example.com/image.jpg", "type": "image"}], "reactions": [{"user_id": "54321", "reaction": "thumbs-up"}], "mentions": [{"user_id": "54321", "name": "Alice"}]},
+       {"message_id": "2", "sender_id": "54321", "receiver_id": "98765", "timestamp": "2023-04-26 10:25:23", "content": "Hola John, estoy bien gracias ¿y tú?", "is_read": true},
+       {"message_id": "3", "sender_id": "98765", "receiver_id": "54321", "timestamp": "2023-04-26 10:26:01", "content": "Estoy bien también, gracias. ¿Qué planes tienes para hoy?", "is_read": false},
+       {"message_id": "4", "sender_id": "54321", "receiver_id": "98765", "timestamp": "2023-04-26 10:28:47", "content": "No mucho, solo trabajar en mi proyecto de programación. ¿Y tú?", "is_read": false},
+       {"message_id": "5", "sender_id": "98765", "receiver_id": "54321", "timestamp": "2023-04-26 10:29:15", "content": "Lo mismo aquí, programar todo el día.", "is_read": false, "is_pinned": true, "reply_to": "1"}
+   ]
+}

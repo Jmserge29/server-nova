@@ -1,0 +1,52 @@
+{
+  "id": "1234567890",
+  "username": "ejemploUsuario",
+  "email": "ejemploUsuario@ejemplo.com",
+  "full_name": "Juan Perez",
+  "birthdate": "1990-01-01",
+  "phone_number": "+1234567890",
+  "address": {
+    "street": "123 Main St",
+    "city": "Ciudad",
+    "state": "Estado",
+    "country": "País",
+    "zip_code": "12345"
+  },
+  "preferences": {
+    "notification_settings": {
+      "email": true,
+      "sms": false,
+      "push": true
+    },
+    "language": "es",
+    "timezone": "America/Mexico_City"
+  },
+  "privacy_settings": {
+    "profile_visibility": "public",
+    "contact_info_visibility": "friends_only"
+  },
+  "activity_history": {
+    "last_login": "2022-04-25T14:30:00Z",
+    "last_message": {
+      "id": "9876543210",
+      "content": "¡Hola a todos! ¿Cómo están?",
+      "timestamp": "2022-04-24T18:30:00Z",
+      "channel_id": "1234567890"
+    },
+    "total_messages_sent": 100,
+    "total_files_uploaded": 10,
+    "total_friends": 50
+  },
+  "usage_statistics": {
+    "total_time_on_platform": "30h",
+    "most_used_features": ["chat", "voice calls"],
+    "followers_count": 100,
+    "following_count": 50
+  },
+  "roles": ["admin", "moderator"],
+  "permissions": {
+    "can_post_messages": true,
+    "can_create_channels": false,
+    "can_invite_users": true
+  }
+}
