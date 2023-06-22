@@ -99,7 +99,7 @@ const signUp = async(req, res)=>{
         }
 
         // saving user created
-        const userCreated = await userCreate.save()
+        const userCreated = await userCreate.save({password: 0})
 
         // Genereting token by JWT 
         const token = jwt.sign({ id: userCreated._id }, process.env.SECRET_KEY_TOKEN)
