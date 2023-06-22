@@ -17,23 +17,23 @@ const signUp = async(req, res)=>{
         for(var i=0; i<3;i++){
             if(!data_inputs[i]){
                 return res.status(400).json({
-                    messageError: `An error has ocurred in input the data (${headers_info[i]})`
+                    messageError: [`An error has ocurred in input the data (${headers_info[i]})`]
                 })
             }
         }
 
-        if(!emailValidator.validate(email)) return res.status(403).json({messageError: "The email is invalid!"})
+        if(!emailValidator.validate(email)) return res.status(403).json({messageError: ["The email is invalid!"]})
 
         // Validation Error duplicate users with same email
         const emailFound = await User.find({email: email},{password:0, roles:0, privacy_settings:0, preferences:0, permissions:0, birthdate:0, full_name:0, phone_number:0, username:0})
         if(emailFound.length>0){
-            return res.status(403).json({messageError: "The email entered has been registrated! Please, input an other email :)"})
+            return res.status(403).json({messageError: ["The email entered has been registrated! Please, input an other email :)"]})
         }
 
         // Validation Error duplicate users with same email
         const usernameFound = await User.find({username: username},{password:0, roles:0, privacy_settings:0, preferences:0, permissions:0, birthdate:0, full_name:0, phone_number:0, email:0})
         if(usernameFound.length>0){
-            return res.status(403).json({messageError: "The username entered has been registrated! Please, input an other username :)"})
+            return res.status(403).json({messageError: ["The username entered has been registrated! Please, input an other username :)"]})
         }
         
 
