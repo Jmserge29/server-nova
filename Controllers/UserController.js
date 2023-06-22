@@ -132,7 +132,7 @@ const signIn = async(req,res)=>{
         // Descrypted password and validation if this password is correct or not
         const passwordCompared = await User.comparePassword(password, userFound.password)
         if (!passwordCompared) {
-            return res.status(404).json({
+            return res.status(403).json({
                 auth: false,
                 token: null,
                 message: 'Invalided password'
