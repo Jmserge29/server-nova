@@ -12,9 +12,9 @@ const signUp = async(req, res)=>{
         const headers_info = ["username", "email", "password", "full_name"]
         // Destroying information the user
         const {username, email, password, full_name, roles} = req.body;
-        const data_inputs = [username, email, password, full_name]
+        const data_inputs = [username, email, password]
         // Validation if the alls the inputs are full
-        for(var i=0; i<4;i++){
+        for(var i=0; i<3;i++){
             if(!data_inputs[i]){
                 return res.status(400).json({
                     messageError: `An error has ocurred in input the data (${headers_info[i]})`
@@ -46,7 +46,7 @@ const signUp = async(req, res)=>{
                 username,
                 email,
                 password: passwordEncrypted,
-                full_name,
+                full_name: "",
                 birthdate: "null",
                 phone_number: 0,
                 preferences: {
