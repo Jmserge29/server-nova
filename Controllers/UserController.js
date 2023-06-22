@@ -126,7 +126,7 @@ const signIn = async(req,res)=>{
         const {email, password} = req.body
         if(!email) return res.status(400).json({message: 'No email provided'})
         if(!password) return res.status(400).json({message: 'No password provided'})
-        if(!emailValidator.validate(email)) return res.status(403).json({messageError: "The email is invalid!"})
+        if(!emailValidator.validate(email)) return res.status(403).json({message: "The email is invalid!"})
         const userFound = await User.findOne({email: email}, {roles:0,roles:0, privacy_settings:0, preferences:0, permissions:0, birthdate:0, full_name:0, phone_number:0, username:0})
         if(!userFound) return res.status(404).json({auth: false, message: 'the user not found'})
         // Descrypted password and validation if this password is correct or not
@@ -144,7 +144,7 @@ const signIn = async(req,res)=>{
             expiresIn: 60 * 60 * 24
         })
         console.log(time)
-        const user = await User.findByIdAndUpdate(userFound._id, {activity_history: {last_login: time}})
+        const user = await User.findByIdAndUpdate(userFound._id, {activity_history: {last_login: time}}, {password: 0})
         return res.status(200).json({auth: true, token: token, user: user})
     } catch (error) {
         res.status(404).json({

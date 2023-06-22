@@ -31,6 +31,6 @@ app.listen(process.env.PORT_SERVER || 8089, async()=>{
     console.log(`Server in port ${process.env.PORT_SERVER}`)
 })
 
-app.use("/dev", (req, res)=>{
+app.use("/", (req, res)=>{
     res.send(`Hey Dev!, the server is running ${time}`)
 })
