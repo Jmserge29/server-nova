@@ -9,9 +9,9 @@ var time = moment().format('MMMM Do YYYY, h:mm:ss a');
 const signUp = async(req, res)=>{
     try {   
         
-        const headers_info = ["username", "email", "password", "full_name"]
+        const headers_info = ["username", "email", "password"]
         // Destroying information the user
-        const {username, email, password, full_name, roles} = req.body;
+        const {username, email, password, roles} = req.body;
         const data_inputs = [username, email, password]
         // Validation if the alls the inputs are full
         for(var i=0; i<3;i++){
