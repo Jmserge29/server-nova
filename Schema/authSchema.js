@@ -4,6 +4,8 @@ import {z} from 'zod'
 export const registerSchema = z.object({
     username: z.string({
         required_error: "The username is required"
+    }).min(6, {
+        message: "The username must be at least 6 characters"
     }),
     email: z.string({
         required_error: "The email is required"
