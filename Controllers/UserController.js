@@ -3,6 +3,7 @@ import Role from "../Models/Role.js"
 import jwt from "jsonwebtoken"
 import emailValidator from 'email-validator'
 import moment from "moment"
+import Conversation from "../Models/Conversation.js"
 var time = moment().format('MMMM Do YYYY, h:mm:ss a');
 
 // Registrarion user por SignUp Page
@@ -60,7 +61,8 @@ const signUp = async(req, res)=>{
                 },
                 privacy_settings: {
                     profile_visibility: "public",
-                    contact_info_visibility: "friends_only"
+                    contact_info_visibility: "friends_only",
+                    solicitude_autoFollowing: "private"
                 },
                 activity_history: {
                     last_login: time,
@@ -83,7 +85,9 @@ const signUp = async(req, res)=>{
                     can_post_messages: true,
                     can_create_channels: false,
                     can_invite_users: true
-                    }
+                    },
+                solicitude_sender: [],
+                solicitude_me: [],
             }
         )
         // console.log(userCreate)
@@ -97,6 +101,16 @@ const signUp = async(req, res)=>{
             const role = await Role.findOne({ role: 'user' })
             userCreate.roles = [role._id]
         }
+
+        const userSender = await User.findOne({email: "Dev$01@gmail.com"})
+
+        const participantsUser = {
+            user_id: userSender._id,
+            username: userSender.username
+        }
+
+        const conversationInitial = await Conversation.find({participants: participantsUser})
+        console.log(conversationInitial)
 
         // saving user created
         const userCreated = await userCreate.save({password: 0})

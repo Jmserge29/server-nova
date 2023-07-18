@@ -1,59 +1,63 @@
 import { Schema, model } from "mongoose";
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
 
-const notificationSettingsSchema = new Schema({
+export const notificationSettingsSchema = new Schema({
   email: Boolean,
   sms: Boolean,
-  push: Boolean
+  push: Boolean,
 });
 
-const preferencesSchema = new Schema({
+export const preferencesSchema = new Schema({
   notification_settings: notificationSettingsSchema,
-  language:  {
+  language: {
     type: String,
     required: false,
   },
   timezone: {
     type: String,
     required: false,
-  }
+  },
 });
 
-const privacySettingsSchema = new Schema({
+export const privacySettingsSchema = new Schema({
   profile_visibility: {
     type: String,
-},
+  },
   contact_info_visibility: {
     type: String,
     required: true,
-}
+  },
+  solicitude_autoFollowing: {
+    type: Schema.Types.Boolean,
+    required: true,
+  }
 });
 
 const userSchema = new Schema(
   {
     username: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        require: true,
-        unique: false
+      type: String,
+      require: true,
+      unique: false,
     },
     full_name: {
-        type: String,
+      type: String,
     },
     birthdate: {
-        type: String,
+      type: String,
     },
     phone_number: {
-        type: Number,
+      type: Number,
     },
     // // address: {
     // //   street: "123 Main St",
@@ -68,81 +72,107 @@ const userSchema = new Schema(
       last_login: {
         type: String,
         require: true,
-    },
+      },
       last_message: {
         id: {
-        type: String,
-        require: true,
-    },
+          type: String,
+          require: true,
+        },
         content: {
-        type: String,
-        require: true,
-        unique: false
-    },
+          type: String,
+          require: true,
+          unique: false,
+        },
         timestamp: {
-        type: String,
-        require: true,
-        unique: false
-    },
+          type: String,
+          require: true,
+          unique: false,
+        },
         channel_id: {
-        type: String,
-        require: true,
-        unique: false
-    },
+          type: String,
+          require: true,
+          unique: false,
+        },
       },
       total_messages_sent: {
         type: Number,
         require: true,
-        unique: false
-    },
+        unique: false,
+      },
       total_files_uploaded: {
         type: Number,
         require: true,
-        unique: false
-    },
+        unique: false,
+      },
       total_friends: {
         type: Number,
         require: true,
-        unique: false
-    },
+        unique: false,
+      },
     },
     usage_statistics: {
       total_time_on_platform: {
         type: String,
         require: true,
-        unique: false
-    },
+        unique: false,
+      },
       followers_count: {
         type: Number,
         require: true,
-        unique: false
-    },
+        unique: false,
+      },
       following_count: {
         type: Number,
         require: true,
-        unique: false
+        unique: false,
+      },
     },
-    },
-    roles: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "Role"
+    conversations: [
+      {
+        conversations_id: {
+          type: Schema.Types.ObjectId,
+          require: true,
         },
+        conversations_name: {
+          type: String,
+          require: true
+        }
+      },
+    ],
+    roles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Role",
+      },
     ],
     permissions: {
       can_post_messages: {
         type: Boolean,
         require: true,
-    },
+      },
       can_create_channels: {
         type: Boolean,
         require: true,
-    },
+      },
       can_invite_users: {
         type: Boolean,
         require: true,
+      },
     },
-    },
+    solicitude_sender: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Solicitude',
+        required: true
+      }
+    ],
+    solicitude_me: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Solicitude',
+        required: true
+      }
+    ]
   },
   {
     timestamps: true,
@@ -153,14 +183,12 @@ const userSchema = new Schema(
 // FuctionsDev
 // Encrypt password the User
 userSchema.statics.encryptPassword = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(password, salt)
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 };
-// Comparer Passwords the User 
+// Comparer Passwords the User
 userSchema.statics.comparePassword = async (password, reveicedPassword) => {
-    return await bcrypt.compare(password, reveicedPassword)
-}
-
-
+  return await bcrypt.compare(password, reveicedPassword);
+};
 
 export default model("User", userSchema);
