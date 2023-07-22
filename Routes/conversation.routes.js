@@ -8,6 +8,8 @@ const router = Router()
 router.post("/createConvesartion", ConversationCtrl.createConversation)
 router.get("/getsAllConversations", ConversationCtrl.getsConversationsAll)
 router.get("/getConversationsById/:id", ConversationCtrl.getConversationsById)
-router.post("/addParticipant/:id", ConversationCtrl.addParticipant)
+router.put("/updateConversationById/:id", ConversationCtrl.updateConversationById)
+router.delete("/deleteConversationById/:id", ConversationCtrl.deleteConversationById)
 
+router.put("/addParticipant/:id", ConversationCtrl.addParticipant)
 export default router;

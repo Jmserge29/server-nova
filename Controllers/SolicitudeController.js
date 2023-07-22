@@ -2,6 +2,7 @@ import Solicitude from "../Models/Solicitude.js";
 import User from "../Models/User.js"
 import Conversation from '../Models/Conversation.js'
 
+// CHECK
 const createSolicitude = async (req, res) => {
   try {
     const { sender_id, username_destination, conversation_id } = req.body;
@@ -12,7 +13,7 @@ const createSolicitude = async (req, res) => {
       "conversation_id": conversation_id,
     });
 
-    if(solicitudeExist) return res.status(409).json({messagError: "The solicitude already exists"})
+    if(solicitudeExist) return res.status(409).json({messagError: `The solicitude already exists ${username_destination}`})
 
     // Confirmation sender_id valid
     const userValid = await User.findById(sender_id).catch((error) => {
@@ -45,6 +46,14 @@ const createSolicitude = async (req, res) => {
 
     console.log(solicitudeCreate)
 
+    // Add solicitudes_participants in the conversation
+    conversation.solicitudes_participants.push(solicitudeCreate._id)
+    const conversationUpdated = await Conversation.updateOne({_id: conversation_id}, { $set: { solicitudes_participants: conversation.solicitudes_participants } }).catch((error) => {
+      console.log(error)
+      return res.status(400).json({messagError: "The conversation hasn't been updated"})
+    })
+    if(conversationUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The conversation hasn't been updated"})
+
     // Add solicitude_sender of the User sender
     userValid.solicitude_sender.push(solicitudeCreate._id)
     const userSenderUpdated = await User.updateOne({_id: sender_id}, { $set: { solicitude_sender: userValid.solicitude_sender } }).catch((error) => {
@@ -70,6 +79,119 @@ const createSolicitude = async (req, res) => {
     console.log("The server has been an error :(");
   }
 };
+
+// CHECK
+const createManySolicitudes = async(req, res )=> {
+  try {
+    const {id} = req.params
+    const {participant, sender_id} = req.body
+
+    // Confirmation sender_id valid
+    const userSender = await User.findById(sender_id).catch((error) => {
+      console.log(error)
+      return res.status(404).json({messageError: "Invalid credentials"})
+    })
+
+    if(!userSender) return res.status(400).json({messagError: "Invalid Credentials!"})
+
+    //Validation aditional of the conversation exist
+    const conversation = await Conversation.findById(id).catch((error) => {
+      console.log(error)
+      return res.status(400).json({messagError: "The id conversation is invalid"})
+    })
+    if(!conversation) return res.status(400).json({messagError:"The conversaion hasn't been found"})
+
+    // Authorization
+    if(!(conversation.creater_conversation === userSender.username)) return res.status(400).json({messagError: "Unauthorized!"})
+    var solicitudesData = []
+    var usersValids = []
+    var usersInvalid = []
+    var usersExist = []
+
+    await Promise.all(participant.map(async(data, i)=> {
+      // Validation if the user exist
+      var userValid = await User.findOne({username: data}).catch((error) => {
+          console.log(error)
+          usersInvalid.push(data)
+        })
+      if(!userValid) {
+        console.log("Invalid : ", data)
+        usersInvalid.push(data)
+        return
+      }
+
+      // Validation if the solicitude already exist
+      var solicitudeExist = await Solicitude.findOne({
+        "sender_id.id": sender_id,
+        "username_destination": data,
+        "conversation_id": id,
+      });
+      if(solicitudeExist){
+        usersExist.push(data)
+        return
+      }
+
+      usersValids.push(data)
+      console.log(`The user (${i}): ${data}`)
+      const solicitudeCreate = await new Solicitude(
+        {
+            sender_id: {
+                username: userSender.username,
+                id: sender_id
+            },
+            username_destination: data,
+            conversation_id: id,
+            response: "Pending"
+        }
+      ).save()
+
+      solicitudesData.push(solicitudeCreate)
+      
+      // Add solicitudes_participants in the conversation
+      conversation.solicitudes_participants.push(solicitudeCreate._id)
+      const conversationUpdated = await Conversation.updateOne({_id: id}, { $set: { solicitudes_participants: conversation.solicitudes_participants } }).catch((error) => {
+        console.log(error)
+        return res.status(400).json({messagError: "The conversation hasn't been updated"})
+      })
+      if(conversationUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The conversation hasn't been updated"})
+
+      // Add solicitude_sender of the User sender
+      userSender.solicitude_sender.push(solicitudeCreate._id)
+      const userSenderUpdated = await User.updateOne({_id: sender_id}, { $set: { solicitude_sender: userValid.solicitude_sender } }).catch((error) => {
+        console.log(error)
+        return res.status(400).json({messagError: "The user hasn't been updated"})
+      })
+      if(userSenderUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The user hasn't been updated"})
+      
+      // console.log("The User Solicitudes senders has been updated!\n")
+
+      // Add solicitude_me of the user destination
+      userValid.solicitude_me.push(solicitudeCreate._id)
+      const userValidUpdated = await User.updateOne({_id: userValid._id}, { $set: { solicitude_me: userValid.solicitude_me }})
+
+      if(userValidUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The user hasn't been updated"})
+      console.log("Usuarios Validos", usersValids)
+      return usersValids
+    }))
+
+
+    res.status(200).json(
+      {
+      success: true, 
+      data: 
+        {
+          usersInvalid: usersInvalid,
+          usersExist: usersExist,
+          solicitudesSenders: usersValids,
+          data: solicitudesData  
+        }
+      })
+
+
+  } catch (error) {
+    console.log("An error has been ocurred in the server: ", error)
+  }
+}
 
 // Accept Solicitude by id in the params.id (Update response)
 const acceptSolicitude = async(req, res) => {
@@ -101,6 +223,7 @@ const acceptSolicitude = async(req, res) => {
     }
 }
 
+// CHECK
 const getsSolicitudesAll = async(req, res) => {
   try {
     const solicitudes = await Solicitude.find({}).catch(error => {
@@ -120,6 +243,7 @@ const getsSolicitudesAll = async(req, res) => {
   }
 }
 
+// CHECK
 const getSolicitudeById = async(req, res)=> {
   try {
     const {id} = req.params.id
@@ -136,6 +260,7 @@ const getSolicitudeById = async(req, res)=> {
   }
 }
 
+// CHECK
 const getSolicitudesBySender_Id = async(req, res) => {
   try {
     const {id} = req.params.id
@@ -152,6 +277,7 @@ const getSolicitudesBySender_Id = async(req, res) => {
   }
 }
 
+// CHECK
 const getSolicitudesByDestination_Username = async(req, res) => {
   try {
     const {username} = req.params.username
@@ -168,6 +294,45 @@ const getSolicitudesByDestination_Username = async(req, res) => {
   }
 }
 
+const deleteSolicitudeById = async(req, res) => {
+  try {
+    const {id} = req.params
+    const solicitude = await Solicitude.findById(id).catch((error) => {
+      console.log(error)
+      return res.status(400).json({messagError: "The Solicitude not found"})
+    })
+    if(!solicitude) return res.status(400).json({messagError: "The Solicitude not found"})
+
+    const solicitudeDeleted = await Solicitude.deleteOne({_id: id})
+    if(solicitudeDeleted.deletedCount != 1) return res.status(402).json({messagError: "An error has ocurred"})
+    return res.status(200).json({success: true, data: `The Solciitude  [ (id): ${id} ] has been deleted!`})
+  } catch (error) {
+    console.log("The server has been an error :(")
+  }
+}
+
+const deleManySolicitudes = async(req, res) => {
+  try {
+    const {id} = req.params
+    const conversation = await Conversation.findById(id)
+    if(!conversation) return res.status(404).json({success: false, messagError: "The conversation wasn't found"})
+
+    const {solicitudes} = req.body
+    var conversationsDeleted = []
+    var conversationsNotFound=[]
+    await Promise.all(solicitudes.map(async(data, i) => {
+      const solicitude = await Solicitude.findById(data).catch((error) => {
+        console.log(error)
+        conversationsNotFound.push(data)
+        return
+      })
+      if(!solicitude) return res.status(400).json({messagError: "The Solicitude not found"})
+    }))
+
+  } catch (error) {
+    console("An error has ocurred in the server :(")
+  }
+ }
 
 export default {
   createSolicitude,
@@ -176,4 +341,6 @@ export default {
   getSolicitudeById,
   getSolicitudesBySender_Id,
   getSolicitudesByDestination_Username,
+  createManySolicitudes,
+  deleteSolicitudeById
 }

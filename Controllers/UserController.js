@@ -62,7 +62,7 @@ const signUp = async(req, res)=>{
                 privacy_settings: {
                     profile_visibility: "public",
                     contact_info_visibility: "friends_only",
-                    solicitude_autoFollowing: "private"
+                    solicitude_autoFollowing: true
                 },
                 activity_history: {
                     last_login: time,

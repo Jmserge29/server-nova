@@ -15,7 +15,7 @@ const conversationSchema = new Schema(
         require: true,
     },
     creater_conversation: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.String,
         require: true
     },
     solicitudes_participants: [

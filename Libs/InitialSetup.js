@@ -35,6 +35,7 @@ export const createTypesConversations = async () => {
     const valuesTypes = await Promise.all([
       new TypeConversation({ type_identify: "group_identify" }).save(),
       new TypeConversation({ type_identify: "chat_personal" }).save(),
+      // Prototype
       new TypeConversation({ type_identify: "chat_nova_random" }).save(),
     ]);
     console.log(valuesTypes);
