@@ -2,7 +2,8 @@ import Conversation from "../Models/Conversation.js";
 import TypeConversation from "../Models/TypeConversation.js";
 import User from "../Models/User.js";
 import CtrlSolicitude from "./SolicitudeController.js"
-
+import CtrlMessage from "./MessageController.js";
+import Message from '../Models/Message.js'
 // CHECK
 const createConversation = async(req, res )=> {
   try {
@@ -208,18 +209,72 @@ const deleteConversationById = async(req, res )=> {
     const userCreater = await User.findById(conversationCreater)
 
     if(!userCreater) return res.status(404).json({messagError: "Error, The user not found", success: false})
-    console.log(conversation.creater_conversation)
-    console.log(userCreater.username)
     if(!(conversation.creater_conversation === userCreater.username)) return res.status(400).json({messagError: "Unauthorized!"})
 
 
     // Delete Messenges this Conversation
-
+    req.body.messages = conversation.messages
+    await CtrlMessage.deleteManyMessages(req, res)
     // Delete Solicitudes this Conversation
+    req.body.solicitudes = conversation.solicitudes_participants
+    await CtrlSolicitude.deleteManySolicitudes(req, res) // Add new response in the controller Solciitudes in the req
+    // Delete Participants id conversation
+    const participantsIds = conversation.participants.map((data) => data.user_id)
+    var usersNotFound = []
+    var usersNotConversation = []
+    var usersError = []
+    var usersDeletedParticipants = []
+    await Promise.all(participantsIds.map(async(data) => {
+      const userValid = await User.findById(data).catch((error) => {
+        console.log(error)
+      })
+      if(!userValid) {
+        usersNotFound.push(data)
+        return
+      }
 
-    // Delete Participants id conversation (FULL)
+      const conversationsUserValid = userValid.conversations.map((jump) => jump.conversations_id)
+      if(!(conversationsUserValid.includes(id))){
+        usersNotConversation.push(data)
+        return
+      }
 
-    res.status(200).json({success: true, data: `The conversation ( ${conversation.subject} ) delete succesly!`})
+      const index = conversationsUserValid.indexOf(data);
+      if (!(index !== -1)) {
+        usersNotConversation.push(data)
+        return
+      }
+
+      userValid.conversations.splice(index, 1);
+      const updateUser = await User.updateOne({_id: data}, {$set: {conversations: userValid.conversations}})
+      if(updateUser.modifiedCount != 1){
+        usersError.push(data)
+        return
+      }
+      usersDeletedParticipants.push(data)
+    }))
+    
+    console.log(req.body)
+
+    res.status(200).json(
+      {success: true, 
+        solcitudes: {
+          solicitudesNotFound: req.body.solicitudesNotFound, 
+          solicitudesDeleted: req.body.solicitudesDeleted, 
+          solicitudesError: req.body.solicitudesError, 
+        },
+        messages : {
+          messagesDeleteds: req.body.messagesDeleteds
+        },
+        participants: {
+          usersNotFound: usersNotFound,
+          usersNotConversation: usersNotConversation,
+          usersError: usersError,
+          usersDeletedParticipants: usersDeletedParticipants,
+        },
+        data: `The conversation ( ${conversation.subject} ) delete succesly!`
+      }
+    )
   } catch (error) {
     console.log("An error has been in the server :(", error)
   }

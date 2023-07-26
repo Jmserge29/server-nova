@@ -7,9 +7,9 @@ import {loginSchema, registerSchema} from '../Schema/authSchema.js'
 const router  = Router()
 
 // Routes
-// router.post("/sign-in", validateSchema(loginSchema), userCtrl.signIn)
+router.post("/sign-in", validateSchema(loginSchema), userCtrl.signIn)
 router.post("/sign-up", validateSchema(registerSchema), userCtrl.signUp)
-router.post("/sign-in", userCtrl.signIn)
+// router.post("/sign-in", userCtrl.signIn)
 // router.post("/sign-up", userCtrl.signUp)
 
 router.post("/sign-out", userCtrl.signOut)

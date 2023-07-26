@@ -147,17 +147,9 @@ const createManySolicitudes = async(req, res )=> {
 
       solicitudesData.push(solicitudeCreate)
       
-      // Add solicitudes_participants in the conversation
-      conversation.solicitudes_participants.push(solicitudeCreate._id)
-      const conversationUpdated = await Conversation.updateOne({_id: id}, { $set: { solicitudes_participants: conversation.solicitudes_participants } }).catch((error) => {
-        console.log(error)
-        return res.status(400).json({messagError: "The conversation hasn't been updated"})
-      })
-      if(conversationUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The conversation hasn't been updated"})
-
       // Add solicitude_sender of the User sender
-      userSender.solicitude_sender.push(solicitudeCreate._id)
-      const userSenderUpdated = await User.updateOne({_id: sender_id}, { $set: { solicitude_sender: userValid.solicitude_sender } }).catch((error) => {
+      await userSender.solicitude_sender.push(solicitudeCreate._id)
+      const userSenderUpdated = await User.updateOne({_id: sender_id}, { $set: { solicitude_sender: userSender.solicitude_sender } }).catch((error) => {
         console.log(error)
         return res.status(400).json({messagError: "The user hasn't been updated"})
       })
@@ -171,9 +163,15 @@ const createManySolicitudes = async(req, res )=> {
 
       if(userValidUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The user hasn't been updated"})
       console.log("Usuarios Validos", usersValids)
-      return usersValids
     }))
-
+    const newSolicitudes = solicitudesData.map((data)=>data._id)
+    console.log(newSolicitudes)
+    // Add solicitudes_participants in the conversation
+    const conversationUpdated = await Conversation.updateOne({_id: id}, { $set: { solicitudes_participants: newSolicitudes } }).catch((error) => {
+      console.log(error)
+      return res.status(400).json({messagError: "The conversation hasn't been updated"})
+    })
+    if(conversationUpdated.modifiedCount == 0) return res.status(400).json({messagError: "The conversation hasn't been updated"})
 
     res.status(200).json(
       {
@@ -294,6 +292,7 @@ const getSolicitudesByDestination_Username = async(req, res) => {
   }
 }
 
+// CHECK
 const deleteSolicitudeById = async(req, res) => {
   try {
     const {id} = req.params
@@ -311,26 +310,73 @@ const deleteSolicitudeById = async(req, res) => {
   }
 }
 
-const deleManySolicitudes = async(req, res) => {
+// CHECK
+const deleteManySolicitudes = async(req, res) => {
   try {
     const {id} = req.params
     const conversation = await Conversation.findById(id)
     if(!conversation) return res.status(404).json({success: false, messagError: "The conversation wasn't found"})
 
     const {solicitudes} = req.body
-    var conversationsDeleted = []
-    var conversationsNotFound=[]
+    var solicitudesDeleted = []
+    var solicitudesError = []
+    var solicitudesNotFound=[]
+
     await Promise.all(solicitudes.map(async(data, i) => {
       const solicitude = await Solicitude.findById(data).catch((error) => {
-        console.log(error)
-        conversationsNotFound.push(data)
+        solicitudesNotFound.push(data)
         return
       })
-      if(!solicitude) return res.status(400).json({messagError: "The Solicitude not found"})
+      if(!solicitude) {
+        solicitudesNotFound.push(data)
+        return
+      }
+
+      // Delete Solicitude in the perfil user Destination
+      const userDestination = await User.findOne({username: solicitude.username_destination}).catch((error) => {
+        solicitudesError.push(data)
+        return
+      })
+
+      if(!userDestination) {
+        solicitudesError.push(data)
+        return
+      }
+
+      if(!(userDestination.solicitude_me.includes(data))){
+        solicitudesError.push(data)
+        return
+      }
+
+      const index = userDestination.solicitude_me.indexOf(data);
+      if (!(index !== -1)) {
+        solicitudesError.push(data)
+        return
+      }
+
+      userDestination.solicitude_me.splice(index, 1);
+      const updateSolicitudes = await User.updateOne({_id: userDestination._id}, {$set: {solicitude_me: userDestination.solicitude_me}})
+      if(updateSolicitudes.modifiedCount != 1){
+        solicitudesError.push(data)
+        return
+      }
+
+      const solicitudeDeleted = await Solicitude.deleteOne({_id: data}).catch((error) => {
+        console.log(error)
+      })
+      if(solicitudeDeleted.deletedCount != 1){
+        solicitudesError.push(data)
+        return
+      }
+      solicitudesDeleted.push({name: solicitude._id ,status: `delete`})
+      return
     }))
+    req.body.solicitudesNotFound = solicitudesNotFound
+    req.body.solicitudesError = solicitudesError
+    req.body.solicitudesDeleted = solicitudesDeleted
 
   } catch (error) {
-    console("An error has ocurred in the server :(")
+    console.log("An error has ocurred in the server :(")
   }
  }
 
@@ -342,5 +388,6 @@ export default {
   getSolicitudesBySender_Id,
   getSolicitudesByDestination_Username,
   createManySolicitudes,
-  deleteSolicitudeById
+  deleteSolicitudeById,
+  deleteManySolicitudes
 }

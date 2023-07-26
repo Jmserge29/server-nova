@@ -1,5 +1,5 @@
-import { Schema, model, mongo } from "mongoose";
-
+import { Schema, model } from "mongoose";
+import bcrypt from 'bcryptjs'
 const messageSchema = new Schema(
     {
         // conversation_id: {
@@ -48,5 +48,16 @@ const messageSchema = new Schema(
     }
 
 )
+
+    // FuctionsDev
+    // Encrypt message the User
+    messageSchema.statics.encryptMessage = async (message) => {
+        const salt = await bcrypt.genSalt(16);
+        return await bcrypt.hash(message, salt);
+    };
+    // Comparer messages the User
+    messageSchema.statics.compareMessage = async (message, reveicedMessage) => {
+        return await bcrypt.compare(message, reveicedMessage);
+    };  
 
 export default model("Message", messageSchema)

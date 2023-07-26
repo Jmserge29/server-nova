@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import routeUser from "./Routes/user.routes.js"
 import routerConversations from "./Routes/conversation.routes.js";
 import routerSolicitude from './Routes/solicitude.routes.js'
+import routerMessage from './Routes/message.routes.js'
 import "./Database.js"
 import helmet from 'helmet'
 import morgan from "morgan";
@@ -25,6 +26,7 @@ app.use(cookieParser())
 app.use('/User', routeUser)
 app.use('/Conversation', routerConversations)
 app.use('/Solicitude', routerSolicitude)
+app.use('/Message', routerMessage)
 // app.use(helmet());
 app.use(morgan('dev'));
 
