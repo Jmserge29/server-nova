@@ -151,8 +151,6 @@ const addParticipant = async(req, res) => {
     const {id} = req.params
     const conversationObject = await Conversation.findById(id)
     if(!conversationObject) return res.status(404).json({messageError: "The id conversation is invalid!"})
-    // console.log(conversationObject)
-    // Data updating in the body (participant) ==> username
     const {participant, user_id} = req.body
 
     const userCreater = await User.findById(user_id)
@@ -215,9 +213,11 @@ const deleteConversationById = async(req, res )=> {
     // Delete Messenges this Conversation
     req.body.messages = conversation.messages
     await CtrlMessage.deleteManyMessages(req, res)
+
     // Delete Solicitudes this Conversation
     req.body.solicitudes = conversation.solicitudes_participants
     await CtrlSolicitude.deleteManySolicitudes(req, res) // Add new response in the controller Solciitudes in the req
+
     // Delete Participants id conversation
     const participantsIds = conversation.participants.map((data) => data.user_id)
     var usersNotFound = []
@@ -233,18 +233,18 @@ const deleteConversationById = async(req, res )=> {
         return
       }
 
-      const conversationsUserValid = userValid.conversations.map((jump) => jump.conversations_id)
-      if(!(conversationsUserValid.includes(id))){
+      const conversationsUserValid = userValid.conversations.map((jump) => jump.conversations_id.toString())
+      if(!(conversationsUserValid.includes(id.toString()))){
         usersNotConversation.push(data)
         return
       }
 
-      const index = conversationsUserValid.indexOf(data);
+      const index = conversationsUserValid.indexOf(id.toString());
       if (!(index !== -1)) {
         usersNotConversation.push(data)
         return
       }
-
+      
       userValid.conversations.splice(index, 1);
       const updateUser = await User.updateOne({_id: data}, {$set: {conversations: userValid.conversations}})
       if(updateUser.modifiedCount != 1){
@@ -253,9 +253,14 @@ const deleteConversationById = async(req, res )=> {
       }
       usersDeletedParticipants.push(data)
     }))
-    
-    console.log(req.body)
 
+    //Delete Conversation
+    const conversationDelete = await Conversation.deleteOne({_id: id}).catch((error) => {
+      console.log(error)
+      return res.status(400).json({success: false, messagError: "Error deleting conversation"})
+    })
+    if(conversationDelete.deletedCount != 1) return res.status(402).json({success: false, messageError: "The conversation hasn't been deleted :( "})
+    
     res.status(200).json(
       {success: true, 
         solcitudes: {
@@ -280,11 +285,25 @@ const deleteConversationById = async(req, res )=> {
   }
 }
 
+const RemoveAllConversations = async(req, res) => {
+  try {
+    const result = await Conversation.deleteMany({}).catch((error) => {
+      console.log(error)
+      return res.status(400).json({success: false, messagError: "The conversations hasn't been deleted!"})
+    })
+    if(!result) return res.status(400).json({success: false, messagError: "The conversations hasn't been deleted!"})
+    return res.status(200).json({success: true, data: "The conversations has been deleted:)"})
+  } catch (error) {
+    console.log("An error has been in the server :(", error)
+  }
+}
+
 export default {
   getsConversationsAll,
   getConversationsById,
   createConversation,
   addParticipant,
   updateConversationById,
-  deleteConversationById
+  deleteConversationById,
+  RemoveAllConversations
 };

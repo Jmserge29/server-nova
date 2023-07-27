@@ -12,6 +12,7 @@ import "./Database.js"
 import helmet from 'helmet'
 import morgan from "morgan";
 import {createRoles, createTypesConversations, createUsers, createMessageWelcome, createInitialConversation } from './Libs/InitialSetup.js'
+// import { removeSetup } from "./Libs/RemoveSetup.js";
 // Declaration of the variables
 const app = express()
 dotenv.config()
@@ -24,9 +25,10 @@ app.use(cors({ origin: "*", credentials: true}))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/User', routeUser)
-app.use('/Conversation', routerConversations)
-app.use('/Solicitude', routerSolicitude)
 app.use('/Message', routerMessage)
+app.use('/Solicitude', routerSolicitude)
+app.use('/Conversation', routerConversations)
+// app.use("/Constructor", removeSetup)
 // app.use(helmet());
 app.use(morgan('dev'));
 

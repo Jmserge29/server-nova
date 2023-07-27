@@ -9,6 +9,6 @@ router.get("/getSolicitudesAlls", SolicitudeCtrl.getsSolicitudesAll)
 router.get("/getSolicitudeById/:id", SolicitudeCtrl.getSolicitudeById)
 router.get("/getSolicitudeBySenderId/:id", SolicitudeCtrl.getSolicitudesBySender_Id)
 router.get("/getSolicitudeByDestinationUsername/:id", SolicitudeCtrl.getSolicitudesByDestination_Username)
-router.get("/acceptSolicitude", SolicitudeCtrl.acceptSolicitude)
+router.post("/acceptSolicitude/:id", SolicitudeCtrl.acceptSolicitude)
 router.delete("/deleteSolicitudeById/:id", SolicitudeCtrl.deleteSolicitudeById)
 export default router;

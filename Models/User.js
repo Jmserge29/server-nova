@@ -35,6 +35,10 @@ export const privacySettingsSchema = new Schema({
 
 const userSchema = new Schema(
   {
+    picture: {
+      type: String,
+      require: true
+    },
     username: {
       type: String,
       required: true,

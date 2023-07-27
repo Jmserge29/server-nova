@@ -12,7 +12,7 @@ const signUp = async(req, res)=>{
         
         const headers_info = ["username", "email", "password"]
         // Destroying information the user
-        const {username, email, password, roles} = req.body;
+        const {username, email, password, roles, picture} = req.body;
         const data_inputs = [username, email, password]
         // Validation if the alls the inputs are full
         for(var i=0; i<3;i++){
@@ -91,6 +91,11 @@ const signUp = async(req, res)=>{
             }
         )
         // console.log(userCreate)
+        if(picture) {
+            userCreate.picture = picture
+        } else {
+            userCreate.picture = "data:image/svg+xml;utf8,%3Csvg%20viewBox%3D%22-1.5%20-1.5%208%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22hsl(160%2090%25%2045%25)%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%2F%3E%3C%2Fsvg%3E"
+        }
 
         // Verify roles and store in userCreate
         if (roles) {
@@ -221,6 +226,20 @@ const getuserById = async(req, res) =>{
     }
 }
 
+const confirmationExistUserByEmail = async(req, res) => {
+    try {
+        const {email} = req.body
+        const user = await User.findOne({email}).catch((error) => {
+            console.log(error)
+            return res.status(400),json({find: false})
+        })
+        if(!user) return res.status(400),json({find: false})
+        return res.status(200).json({find: true})
+    } catch (error) {
+        console.log("An error has ocurred in the server 😪")
+    }
+}
+
 // Estadistics or data the user for control the activity
 const UserByEstadistics = ()=>{
     try {
@@ -238,4 +257,5 @@ export default {
     getsUsers,
     getuserById,
     UserByEstadistics,
+    confirmationExistUserByEmail
 }
