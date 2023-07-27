@@ -229,11 +229,13 @@ const getuserById = async(req, res) =>{
 const confirmationExistUserByEmail = async(req, res) => {
     try {
         const {email} = req.body
-        const user = await User.findOne({email}).catch((error) => {
+        console.log(req.body)
+        const user = await User.findOne({email: email}).catch((error) => {
             console.log(error)
-            return res.status(400),json({find: false})
+            return res.status(400).json({find: false})
         })
-        if(!user) return res.status(400),json({find: false})
+        console.log(user)
+        if(!user) return res.status(400).json({find: false})
         return res.status(200).json({find: true})
     } catch (error) {
         console.log("An error has ocurred in the server 😪")
