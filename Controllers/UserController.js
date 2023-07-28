@@ -227,10 +227,10 @@ const getuserById = async(req, res) =>{
     }
 }
 
-const confirmationExistUserByEmail = async(req, res) => {
+const ProviderGitHubExist = async(req, res) => {
     try {
         const {email} = req.body
-        console.log(req.body)
+        if(!email) return res.status(400).json({succes: false, messageError: "email not provider"})
         const user = await User.findOne({email: email}).catch((error) => {
             console.log(error)
             return res.status(400).json({find: false})
@@ -260,5 +260,5 @@ export default {
     getsUsers,
     getuserById,
     UserByEstadistics,
-    confirmationExistUserByEmail
+    ProviderGitHubExist
 }
