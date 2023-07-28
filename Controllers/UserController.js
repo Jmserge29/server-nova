@@ -44,6 +44,7 @@ const signUp = async(req, res)=>{
         // Creating user in the model
         const userCreate = new User(
             {
+                
                 username,
                 email,
                 password: passwordEncrypted,
