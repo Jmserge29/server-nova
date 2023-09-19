@@ -22,8 +22,8 @@ var time = moment().format('MMMM Do YYYY, h:mm:ss a');
 //App uses
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/User', routeUser)
 app.use(cors({ origin: "*", credentials: true}))
+app.use('/User', routeUser)
 app.use(cookieParser())
 app.use('/Message', routerMessage)
 app.use('/Solicitude', routerSolicitude)
