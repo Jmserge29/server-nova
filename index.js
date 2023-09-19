@@ -8,6 +8,7 @@ import routeUser from "./Routes/user.routes.js"
 import routerConversations from "./Routes/conversation.routes.js";
 import routerSolicitude from './Routes/solicitude.routes.js'
 import routerMessage from './Routes/message.routes.js'
+import routerFriendRequest from "./Routes/friendrequest.routes.js";
 import "./Database.js"
 import helmet from 'helmet'
 import morgan from "morgan";
@@ -21,13 +22,13 @@ var time = moment().format('MMMM Do YYYY, h:mm:ss a');
 //App uses
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*", credentials: true}))
-app.use(express.json())
-app.use(cookieParser())
 app.use('/User', routeUser)
+app.use(cors({ origin: "*", credentials: true}))
+app.use(cookieParser())
 app.use('/Message', routerMessage)
 app.use('/Solicitude', routerSolicitude)
 app.use('/Conversation', routerConversations)
+app.use('/requestFriend', routerFriendRequest)
 // app.use("/Constructor", removeSetup)
 // app.use(helmet());
 app.use(morgan('dev'));

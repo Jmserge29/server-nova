@@ -131,6 +131,27 @@ const userSchema = new Schema(
         unique: false,
       },
     },
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    followers:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    blocked_users: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    description: {
+      type: String
+    },
     conversations: [
       {
         conversations_id: {
@@ -176,7 +197,22 @@ const userSchema = new Schema(
         ref: 'Solicitude',
         required: true
       }
+    ],
+    friendRequest_me: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'FriendRequest',
+        required: true
+      }
+    ],
+    friendRequest_sender: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'FriendRequest',
+        required: true
+      }
     ]
+
   },
   {
     timestamps: true,

@@ -9,6 +9,7 @@ var time = moment().format('MMMM Do YYYY, h:mm:ss a');
 // Registrarion user por SignUp Page
 const signUp = async(req, res)=>{
     try {   
+        console.log("Body: ",req.body)
         
         const headers_info = ["username", "email", "password"]
         // Destroying information the user
@@ -44,11 +45,11 @@ const signUp = async(req, res)=>{
         // Creating user in the model
         const userCreate = new User(
             {
-                
                 username,
                 email,
                 password: passwordEncrypted,
                 full_name: "",
+                description: "",
                 birthdate: "null",
                 phone_number: 0,
                 preferences: {
@@ -87,6 +88,11 @@ const signUp = async(req, res)=>{
                     can_create_channels: false,
                     can_invite_users: true
                     },
+                friends: [],
+                friendRequest_me:[],
+                friendRequest_sender: [],
+                followers: [],
+                blocked_users: [],
                 solicitude_sender: [],
                 solicitude_me: [],
             }
