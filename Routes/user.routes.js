@@ -14,7 +14,7 @@ router.post("/sign-up", validateSchema(registerSchema), userCtrl.signUp)
 
 router.post("/sign-out", userCtrl.signOut)
 router.get("/getsUserAlls", userCtrl.getsUsers)
-router.post("/getUserById/:id", verifyToken, userCtrl.getuserById)
+router.post("/getUserById/:id", userCtrl.getuserById)
 router.post("/getsEstadistics-User", userCtrl.UserByEstadistics)
 router.post("/providerGitHubExist", userCtrl.ProviderGitHubExist)
 
