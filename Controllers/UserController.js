@@ -215,9 +215,9 @@ const getsUsers = async(req, res)=>{
 // Get user asking by id
 const getuserById = async(req, res) =>{
     try {
-        const {username} = req.body
+        const username = req.params.id
         if(!username){
-            return res.status(401).json({message: 'The requests is bad'})
+            return res.status(401).json({message: 'The (username) not provided'})
         }
         const userSearch = await User.find({username: username})
         if (!userSearch.length) {
