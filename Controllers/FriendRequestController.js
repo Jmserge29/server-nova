@@ -56,7 +56,7 @@ const createFriendRequest = async(req, res) => {
         })
         console.log("The friendRequest at userDestination has been added")
 
-        return res.status(200).json({success: true, data: friendRequestCreate})
+        return res.status(200).json({success: true, data: friendRequestCreate, userSender: userSenderUpdate, userDestination: userDestinationUpdate})
 
     } catch (error) {
         console.log("An error has ocurred in the server 😖", error)

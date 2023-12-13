@@ -9,6 +9,7 @@ import routerConversations from "./Routes/conversation.routes.js";
 import routerSolicitude from './Routes/solicitude.routes.js'
 import routerMessage from './Routes/message.routes.js'
 import routerFriendRequest from "./Routes/friendrequest.routes.js";
+import routerPublications from "./Routes/publication.routes.js"
 import "./Database.js"
 import helmet from 'helmet'
 import morgan from "morgan";
@@ -29,6 +30,8 @@ app.use('/Message', routerMessage)
 app.use('/Solicitude', routerSolicitude)
 app.use('/Conversation', routerConversations)
 app.use('/requestFriend', routerFriendRequest)
+app.use('/post', routerPublications)
+
 // app.use("/Constructor", removeSetup)
 // app.use(helmet());
 app.use(morgan('dev'));
