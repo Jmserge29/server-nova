@@ -47,7 +47,7 @@ const createPost = async (req, res) => {
 
     console.log(post);
 
-    User.updateOne(
+    await User.updateOne(
       { _id: idCreator },
       { $push: { post: post._id } },
       (err, result) => {
@@ -58,6 +58,7 @@ const createPost = async (req, res) => {
         }
       }
     );
+    
     return res
       .status(200)
       .json({ message: "The post has been created successly!" });

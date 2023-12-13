@@ -211,6 +211,13 @@ const userSchema = new Schema(
         ref: 'FriendRequest',
         required: true
       }
+    ], 
+    post: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Publication',
+        required: true
+      }
     ]
 
   },

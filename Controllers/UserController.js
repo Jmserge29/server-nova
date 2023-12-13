@@ -95,6 +95,7 @@ const signUp = async(req, res)=>{
                 blocked_users: [],
                 solicitude_sender: [],
                 solicitude_me: [],
+                post: []
             }
         )
         // console.log(userCreate)
