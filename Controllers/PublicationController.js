@@ -66,7 +66,15 @@ const createPost = async (req, res) => {
 const getsPostByIdUser = async(req, res) => {
   try {
     const {id} = req.params
-    // const publications 
+    const user = await User.findById(id).catch((err) => {
+      console.error(err)
+      return res.status(404).json({message: "The user not found"})
+    })
+    if(!user) res.status(404).json({message: "The user not found"})
+    const posts = await Publication.find({idCreator : user._id})
+
+    if(!posts) return res.status(404).json({message: "hasn't been possible found the posts by user provided"})
+    return res.status(200).json({sucess: true, data: posts})
   } catch (error) {
     console.log("An error has been in the server", error)
   }
@@ -74,4 +82,5 @@ const getsPostByIdUser = async(req, res) => {
 
 export default {
   createPost,
+  getsPostByIdUser
 };
